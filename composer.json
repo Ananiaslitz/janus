@@ -1,0 +1,27 @@
+{
+    "name": "ananiaslitz/janus",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Gateway\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Diego Ananias",
+            "email": "diegohsananias@gmail.com"
+        }
+    ],
+    "require": {
+        "symfony/yaml": "^7.0",
+        "illuminate/routing": "^11.0",
+        "guzzlehttp/guzzle": "^7.8",
+        "open-telemetry/sdk": "^1.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
+}

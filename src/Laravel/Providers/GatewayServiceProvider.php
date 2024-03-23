@@ -3,7 +3,7 @@
 namespace Gateway\Laravel\Providers;
 
 use Gateway\Core\GatewayService;
-use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class GatewayServiceProvider extends ServiceProvider

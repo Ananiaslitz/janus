@@ -1,6 +1,6 @@
 <?php
 
-namespace Gateway\Core\Contracts;
+namespace Gateway\Core\Contracts\Http;
 
 use Gateway\Core\Endpoint;
 use Psr\Http\Message\ResponseInterface;

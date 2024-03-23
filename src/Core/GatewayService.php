@@ -2,6 +2,7 @@
 
 namespace Gateway\Core;
 
+use Gateway\Core\Cache\CacheFactory;
 use Symfony\Component\Yaml\Yaml;
 
 class GatewayService
@@ -22,8 +23,17 @@ class GatewayService
         return $this->routesConfig;
     }
 
-    public function getEnabledRoutes()
+    public function getEnabledRoutes($configPath)
     {
+        $cacheKey = 'enabledRoutesConfig';
+        $cache = CacheFactory::create();
+
+        if ($cache->has($cacheKey)) {
+            return $cache->get($cacheKey);
+        }
+
+        $this->loadRoutesConfig($configPath);
+
         $enabledRoutes = [];
         foreach ($this->routesConfig as $service => $endpoints) {
             foreach ($endpoints as $endpointKey => $endpointConfig) {
@@ -32,6 +42,8 @@ class GatewayService
                 }
             }
         }
+
+        $cache->set($cacheKey, $enabledRoutes);
         return $enabledRoutes;
     }
 }

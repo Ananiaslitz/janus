@@ -2,10 +2,9 @@
 
 namespace Gateway\Core\Services;
 
-use Gateway\Core\Contracts\HttpClientInterface;
+use Gateway\Core\Contracts\Http\HttpClientInterface;
 use Gateway\Core\Endpoint;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
 
 class HttpService implements HttpClientInterface

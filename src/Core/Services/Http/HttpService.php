@@ -1,6 +1,6 @@
 <?php
 
-namespace Gateway\Core\Services;
+namespace Gateway\Core\Services\Http;
 
 use Gateway\Core\Contracts\Http\HttpClientInterface;
 use Gateway\Core\Endpoint;

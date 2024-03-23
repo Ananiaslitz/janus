@@ -46,4 +46,21 @@ class GatewayService
         $cache->set($cacheKey, $enabledRoutes);
         return $enabledRoutes;
     }
+
+    public function getRouteConfigByPath($requestPath)
+    {
+        foreach ($this->getEnabledRoutes(base_path('gateway.yml')) as $service => $endpoints) {
+            foreach ($endpoints as $endpointKey => $endpointConfig) {
+                if ($endpointConfig['enabled']) {
+                    $pattern = preg_quote($endpointConfig['frontend_url_path'], '#');
+                    $pattern = preg_replace('/\\\{[^\}]+\\\}/', '([^/]+)', $pattern);
+
+                    if (preg_match("#^{$pattern}$#", $requestPath, $matches)) {
+                        return $endpointConfig;
+                    }
+                }
+            }
+        }
+        throw new \RuntimeException("Route config not found for path: {$requestPath}");
+    }
 }

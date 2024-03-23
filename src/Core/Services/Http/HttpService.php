@@ -24,11 +24,18 @@ class HttpService implements HttpClientInterface
             $options['json'] = $endpoint->body;
         }
 
-        if ($endpoint->auth !== null) {
-            // A implementação da autenticação dependerá do tipo de autenticação necessário
+        if ($endpoint->auth) {
+            if ($endpoint->auth['type'] == 'basic') {
+                $options['auth'] = [$endpoint->auth['username'], $endpoint->auth['password']];
+            } elseif ($endpoint->auth['type'] == 'bearer') {
+                $options['headers']['Authorization'] = 'Bearer ' . $endpoint->auth['token'];
+            }
         }
 
-        return $this->client->request($endpoint->method, $endpoint->url, $options);
+        try {
+            return $this->client->request($endpoint->method, $endpoint->url, $options);
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            throw new \RuntimeException("HTTP request failed: " . $e->getMessage());
+        }
     }
-
 }

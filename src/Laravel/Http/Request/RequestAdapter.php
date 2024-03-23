@@ -33,4 +33,8 @@ class RequestAdapter implements RequestAdapterInterface
     {
         return $this->request->getContent();
     }
+
+    public function all() {
+        return $this->request->all();
+    }
 }

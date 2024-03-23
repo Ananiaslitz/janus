@@ -18,24 +18,21 @@ class GatewayController
 
     public function __construct(
         HttpClientInterface $httpService,
-        GatewayService $gatewayService,
-         $requestAdapter
+        GatewayService $gatewayService
     ) {
         $this->httpService = $httpService;
         $this->gatewayService = $gatewayService;
-        $this->requestAdapter = $requestAdapter;
     }
 
     public function handle(RequestAdapterInterface $request)
     {
-        $adaptedRequest = $this->requestAdapter->adapt($request);
-        $routeConfig = $this->gatewayService->getEnabledRoutes($adaptedRequest->path());
+        $routeConfig = $this->gatewayService->getRouteConfigByPath($request->getPath());
 
         $endpoint = new Endpoint(
             $routeConfig['ms_request_verb'],
-            $routeConfig['ms_url'],
+            $routeConfig['ms_url_path'],
             $routeConfig['ms_headers'] ?? [],
-            $adaptedRequest->all(),
+            $request->all(),
             $routeConfig['auth'] ?? null
         );
 

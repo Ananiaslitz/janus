@@ -12,10 +12,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class GatewayController
 {
-    private $httpService;
-    private $gatewayService;
-    private $middlewareProcessor;
-    private $transformerManager;
+    private HttpClientInterface $httpService;
+    private GatewayService $gatewayService;
+    private MiddlewareProcessor $middlewareProcessor;
+    private TransformerManager $transformerManager;
+    private $mutatorManater;
 
     public function __construct(
         HttpClientInterface $httpService,
@@ -32,14 +33,23 @@ class GatewayController
 
     public function handle(RequestAdapterInterface $request)
     {
-        return $this->processRequest($request);
+        $routeConfig = $this->gatewayService->getRouteConfigByPath($request->getPath());
+
+        if (!empty($routeConfig['request']['decorators'])) {
+            $request = $this->mutatorManater->mutate($request, $routeConfig);
+        }
+
+        $responsed = $this->processRequest($request, $routeConfig);
+
+        if (!empty($routeConfig['transformers'])) {
+            $responsed = $this->transformerManager->transform($responsed, $routeConfig['transformers']);
+        }
+
+        return $responsed;
     }
 
-
-    private function processRequest(RequestAdapterInterface $requestAdapter)
+    private function processRequest(RequestAdapterInterface $requestAdapter, $routeConfig)
     {
-        $routeConfig = $this->gatewayService->getRouteConfigByPath($requestAdapter->getPath());
-
         $coreAction = function ($requestAdapter) use ($routeConfig) {
             $endpoint = new Endpoint(
                 $routeConfig['ms_request_verb'],
@@ -48,16 +58,15 @@ class GatewayController
                 $requestAdapter->all(),
                 $routeConfig['auth'] ?? null
             );
-            $httpResponse = $this->httpService->request($endpoint);
 
-            if (!empty($routeConfig['transformers'])) {
-                $httpResponse = $this->transformerManager->transform($httpResponse, $routeConfig['transformers']);
-            }
-
-            return $httpResponse;
+            return $this->httpService->request($endpoint);
         };
 
-        $response = $this->middlewareProcessor->process($routeConfig['middlewares'] ?? [], $requestAdapter, $coreAction);
+        $response = $this->middlewareProcessor->process(
+            $routeConfig['middlewares'] ?? [],
+            $requestAdapter,
+            $coreAction
+        );
 
         return new Response($response->getBody()->getContents(), $response->getStatusCode(), $response->getHeaders());
     }

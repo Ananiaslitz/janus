@@ -4,19 +4,26 @@ namespace Gateway\Core\Middleware;
 
 class MiddlewareProcessor
 {
+    private $middlewareInstances = [];
+
     public function process(array $middlewares, $request, callable $next)
     {
         $middlewareStack = array_reverse($middlewares);
 
-        $processor = function ($request) use (&$processor, &$middlewareStack, $next) {
-            if ($middleware = array_pop($middlewareStack)) {
-                $middlewareInstance = new $middleware();
-                return $middlewareInstance->handle($request, $processor);
-            } else {
-                return $next($request);
+        while ($middlewareClass = array_pop($middlewareStack)) {
+            if (!isset($this->middlewareInstances[$middlewareClass])) {
+                $this->middlewareInstances[$middlewareClass] = new $middlewareClass();
             }
-        };
 
-        return $processor($request);
+            $middlewareInstance = $this->middlewareInstances[$middlewareClass];
+            $request = $middlewareInstance->handle($request, function ($request) use ($next, &$middlewareStack) {
+                if (empty($middlewareStack)) {
+                    return $next($request);
+                }
+                return $request;
+            });
+        }
+
+        return $request;
     }
 }

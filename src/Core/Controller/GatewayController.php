@@ -6,46 +6,37 @@ use Gateway\Core\Contracts\Http\HttpClientInterface;
 use Gateway\Core\Endpoint;
 use Gateway\Core\GatewayService;
 use Gateway\Core\Middleware\MiddlewareProcessor;
+use Gateway\Core\Mutator\MutatorManager;
 use Gateway\Core\Services\Http\Request\RequestAdapterInterface;
 use Gateway\Core\Transformers\TransformerManager;
 use Symfony\Component\HttpFoundation\Response;
 
 class GatewayController
 {
-    private HttpClientInterface $httpService;
-    private GatewayService $gatewayService;
-    private MiddlewareProcessor $middlewareProcessor;
-    private TransformerManager $transformerManager;
-    private $mutatorManater;
-
     public function __construct(
-        HttpClientInterface $httpService,
-        GatewayService $gatewayService,
-        MiddlewareProcessor $middlewareProcessor,
-        TransformerManager $transformerManager
+        private HttpClientInterface $httpService,
+        private GatewayService $gatewayService,
+        private MiddlewareProcessor $middlewareProcessor,
+        private TransformerManager $transformerManager,
+        private MutatorManager $mutatorManager
     ) {
-        $this->httpService = $httpService;
-        $this->gatewayService = $gatewayService;
-        $this->middlewareProcessor = $middlewareProcessor;
-        $this->transformerManager = $transformerManager;
-
     }
 
     public function handle(RequestAdapterInterface $request)
     {
         $routeConfig = $this->gatewayService->getRouteConfigByPath($request->getPath());
 
-        if (!empty($routeConfig['request']['decorators'])) {
-            $request = $this->mutatorManater->mutate($request, $routeConfig);
+        if (!empty($routeConfig['request']['mutators'])) {
+            $request = $this->mutatorManager->mutate($request, $routeConfig['request']['mutators']);
         }
 
-        $responsed = $this->processRequest($request, $routeConfig);
+        $response = $this->processRequest($request, $routeConfig);
 
-        if (!empty($routeConfig['transformers'])) {
-            $responsed = $this->transformerManager->transform($responsed, $routeConfig['transformers']);
+        if (!empty($routeConfig['response']['transformers'])) {
+            $response = $this->transformerManager->transform($response, $routeConfig['transformers']);
         }
 
-        return $responsed;
+        return $response;
     }
 
     private function processRequest(RequestAdapterInterface $requestAdapter, $routeConfig)
@@ -56,7 +47,8 @@ class GatewayController
                 $routeConfig['ms_url_path'],
                 $routeConfig['ms_headers'] ?? [],
                 $requestAdapter->all(),
-                $routeConfig['auth'] ?? null
+                $routeConfig['auth'] ?? null,
+                $routeConfig['responsible_team'] ?? ''
             );
 
             return $this->httpService->request($endpoint);

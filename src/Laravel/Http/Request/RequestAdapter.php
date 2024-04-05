@@ -29,6 +29,12 @@ class RequestAdapter implements RequestAdapterInterface
         return $this->request->headers->all();
     }
 
+    public function setHeaders(array $headers): self
+    {
+        $this->request->headers->add($headers);
+        return $this;
+    }
+
     public function getBody()
     {
         return $this->request->getContent();

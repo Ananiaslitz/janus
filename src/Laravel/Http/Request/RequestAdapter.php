@@ -35,6 +35,16 @@ class RequestAdapter implements RequestAdapterInterface
         return $this;
     }
 
+    public function setBody(array $body): RequestAdapterInterface
+    {
+        $currentBody = $this->request->json()->all();
+        $modifiedBody = array_merge($currentBody, $body);
+
+        $this->request->json()->replace($modifiedBody);
+
+        return $this;
+    }
+
     public function getBody()
     {
         return $this->request->getContent();

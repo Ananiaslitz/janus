@@ -8,5 +8,6 @@ interface RequestAdapterInterface
     public function getMethod();
     public function getHeaders();
     public function setHeaders(array $headers): self;
+    public function setBody(array $body): self;
     public function getBody();
 }

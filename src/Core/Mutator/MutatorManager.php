@@ -25,6 +25,6 @@ class MutatorManager
                 $this->mutatorInstance[$mutatorClass] = $mutatorClass;
             }
         }
-        return $this->mutatorInstance[$mutatorClass] ?? null;
+        return $mutator ?? null;
     }
 }

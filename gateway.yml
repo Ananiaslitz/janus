@@ -1,0 +1,23 @@
+jose_wanderley:
+  name: rotax
+  enabled: true
+  frontend_url_path: /v1/api/jose
+  ms_request_verb: POST
+  ms_url_path: http://localhost:80/v1/api/ashdhaisd
+  ms_headers:
+    - header a
+    - header b
+  auth: Bearar $AUTH_MS_PARTNERS
+  responsible_team: Partners
+  middleware:
+    - CAMINHO/PARA/MEU/MIDDLEWARE::class
+    - MIDDLEWARE\DE\AUTH::class
+  request:
+    validator:
+      - CAMINHO\PARA\CLASSE\DE\VALIDACAO::class
+    mutators:
+      - CAMINHO\PARA\MEU\MUTATOR::class
+  response:
+    transformers:
+      - CAMINHO\PARA\MEU\TRANSFORMER::class
+      - CAMINHO\PARA\MEU\SEGUNDO\TRANSFORMER::class

@@ -3,15 +3,8 @@
 namespace Gateway\Hyperf\Providers;
 
 use Gateway\Core\Controller\GatewayController;
-use Hyperf\Context\ApplicationContext;
 use Hyperf\HttpServer\Router\Router;
-use Gateway\Core\Contracts\Http\HttpClientInterface;
 use Gateway\Core\GatewayService;
-use Gateway\Core\Services\Http\HttpService;
-use Gateway\Core\Services\Http\Request\RequestAdapterInterface;
-use Gateway\Hyperf\Http\Request\RequestAdapter;
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 
 class GatewayServiceProvider
 {
@@ -27,7 +20,7 @@ class GatewayServiceProvider
 
     public function boot()
     {
-        $this->gatewayService->loadRoutesConfig(base_path('gateway.yml'));
+        $this->gatewayService->loadRoutesConfig(file_get_contents(__DIR__ . 'gateway.yml'));
         $routesConfig = $this->gatewayService->getRoutesConfig();
 
         foreach ($routesConfig as $service => $endpoints) {

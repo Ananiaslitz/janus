@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  php:
+    build:
+      context: .
+    container_name: janus
+    volumes:
+      - ./:/app
+    command: tail -f /dev/null
+
+  composer:
+    image: composer:latest
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: ["composer", "install"]

@@ -11,7 +11,7 @@ class GatewayService
 
     public function loadRoutesConfig($configPath)
     {
-        if (!file_exists($configPath)) {
+        if (!is_file($configPath)) {
             throw new \RuntimeException("Config file not found at {$configPath}");
         }
 

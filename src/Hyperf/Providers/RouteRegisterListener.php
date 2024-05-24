@@ -46,12 +46,8 @@ class RouteRegisterListener implements ListenerInterface
             throw new \RuntimeException("Config file not found at {$configPath}");
         }
 
-        $configContent = file_get_contents($configPath);
-        if ($configContent === false) {
-            throw new \RuntimeException("Failed to read config file at {$configPath}");
-        }
-
-        $routesConfig = Yaml::parse($configContent);
+        $this->gatewayService->loadRoutesConfig($configPath);
+        $routesConfig = $this->gatewayService->getRoutesConfig();
         $router = $this->dispatcherFactory->getRouter('http');
 
         foreach ($routesConfig as $service => $endpoints) {

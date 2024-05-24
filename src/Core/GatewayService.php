@@ -7,7 +7,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class GatewayService
 {
-    private array $routesConfig = [];
+    public array $routesConfig = [];
 
     public function loadRoutesConfig($configPath)
     {
@@ -49,7 +49,7 @@ class GatewayService
 
     public function getRouteConfigByPath($requestPath)
     {
-        foreach ($this->getEnabledRoutes(base_path('gateway.yml')) as $service => $endpoints) {
+        foreach ($this->getEnabledRoutes(BASE_PATH . '/gateway.yml') as $service => $endpoints) {
             foreach ($endpoints as $endpointKey => $endpointConfig) {
                 if ($endpointConfig['enabled']) {
                     $pattern = preg_quote($endpointConfig['frontend_url_path'], '#');

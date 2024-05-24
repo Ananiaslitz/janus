@@ -8,6 +8,8 @@ use Gateway\Core\Services\Http\Request\RequestAdapterInterface;
 use Gateway\Hyperf\Http\Request\RequestAdapter;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use Hyperf\HttpServer\Request;
+use Psr\Http\Message\RequestInterface;
 
 class ConfigProvider
 {
@@ -15,11 +17,13 @@ class ConfigProvider
     {
         return [
             'dependencies' => [
-                ClientInterface::class => function () {
-                    return new Client();
-                },
-                HttpClientInterface::class => HttpService::class,
-                RequestAdapterInterface::class => RequestAdapter::class,
+                HttpClientInterface::class => Gateway\Core\Services\Http\HttpService::class,
+                ClientInterface::class => Client::class,
+                RequestAdapterInterface::class => \Gateway\Hyperf\Http\Request\RequestAdapter::class,
+                RequestInterface::class => Request::class
+            ],
+            'listeners' => [
+                RouteRegisterListener::class
             ],
             'annotations' => [
                 'scan' => [

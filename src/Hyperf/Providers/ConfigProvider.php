@@ -10,6 +10,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use Hyperf\HttpServer\Request;
 use Psr\Http\Message\RequestInterface;
+use Hyperf\Di\Annotation\Inject;
 
 class ConfigProvider
 {
@@ -17,10 +18,10 @@ class ConfigProvider
     {
         return [
             'dependencies' => [
-                HttpClientInterface::class => Gateway\Core\Services\Http\HttpService::class,
+                HttpClientInterface::class => HttpService::class,
                 ClientInterface::class => Client::class,
-                RequestAdapterInterface::class => \Gateway\Hyperf\Http\Request\RequestAdapter::class,
-                RequestInterface::class => Request::class
+                RequestAdapterInterface::class => RequestAdapter::class,
+                RequestInterface::class => Request::class,
             ],
             'listeners' => [
                 RouteRegisterListener::class

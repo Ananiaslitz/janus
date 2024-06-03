@@ -33,7 +33,7 @@ class DependencyInjectionListener implements ListenerInterface
         ];
     }
 
-    public function process(object $event)
+    public function process(object $event): void
     {
         $this->registerDependencies();
     }
